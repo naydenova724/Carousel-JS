@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Carousel</title>
+
+    <style>
+        body{
+            background-color: #34495e;
+        }
+
+        .carouselWrapper{
+            position: absolute;
+            margin: auto;
+            height: 500px;
+            width: 600px;
+            top:calc(50% - 250px);
+            left:calc(50% - 300px);
+            box-shadow: 10px 10px 10px rgb(29, 29, 29);
+            border:1px solid rgb(248, 246, 246);
+        }
+
+        .imageWrapper{
+            position: absolute;
+            width: 100%;
+            height: 400px;
+            text-align: center;
+        }
+
+        .navigationWrapper{
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+            padding-top: 40px;
+            text-align: center;
+            background-color:#fff;
+        }
+
+        .navigationDot{
+            display: inline-block;
+            position: relative;
+            height: 20px;
+            width: 20px;
+            margin-right: 30px;
+            border-radius: 50%;
+            background-color: #2ecc71;
+            cursor: pointer;
+        }
+
+        .navigationDot:hover{
+            background-color: #27ae60;
+        }
+
+        .navigationDot--active{
+            background-color: #9b59b6;
+        }
+
+        .displayImage{
+            position: relative;
+            max-width: 100%;
+            max-height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="carouselWrapper">
+        <div class="imageWrapper"></div>
+        <div class="navigationWrapper">
+        </div>
+    </div>
+
+    <script>
+        var imagesList = ['image1.jpg', 'image2.jpg', 'image3.jpg', 'image4.webp'],
+            currentRotationInterrval;
+
+        initCarousel();
+
+        function initCarousel(){
+            var html = "";
+
+            for(var i = 0; i < imagesList.length; i++){
+                html += '<div class="navigationDot" onclick="changeImage(event.target, true)" data-url="' + imagesList[i] + '" data-id="' + i + '"></div>';
+            }
+
+            document.querySelector('.navigationWrapper').innerHTML = html;
+            changeImage(document.querySelector('.navigationDot'));
+            reInitAutoRotation();
+        }
+
+        function displayImage(URL){
+            document.querySelector('.imageWrapper').innerHTML = "<img class='displayImage' src='images/" + URL + "'/>"
+        }
+        
+        function changeImage(target, manualOverride){
+            var url = target.dataset.url,
+                domNode_allDots = document.querySelectorAll('.navigationDot'),
+                i = 0;
+            
+            while(i<domNode_allDots.length){
+                domNode_allDots[i].classList.remove('navigationDot--active');
+                i++;
+            }
+
+            target.classList.add('navigationDot--active');
+            displayImage(url);
+                
+            if(manualOverride){
+                reInitAutoRotation();
+            }
+        }
+
+        function reInitAutoRotation(){
+            if(currentRotationInterrval){
+                clearInterval(currentRotationInterrval);
+            }
+             
+            currentRotationInterrval = setInterval(function(){
+                var currentIndex = Number(document.querySelector('.navigationDot--active').dataset.id),
+                    nextDot;
+
+                currentIndex++;
+                if(currentIndex > (imagesList.length-1)){
+                    currentIndex = 0;
+                }
+
+                nextDot = document.querySelector('.navigationDot[data-id="' + currentIndex + '"]');
+
+                changeImage(nextDot);           
+            }, 5000);        
+        }
+       
+    </script>
+</body>
+</html>
